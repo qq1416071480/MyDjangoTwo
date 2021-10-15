@@ -1,0 +1,72 @@
+{% extends 'welcome.html' %}
+{% block title %}项目列表{% endblock title %}
+{% block link_sc %}{% endblock link_sc %}
+{% block style %}{% endblock style %}
+{% block body %}
+    <h3 style="padding-left: 10px;color: #353c48">项目列表：
+        <span style="font-size: small;color: grey;">
+        点击 <a href="#" onclick="javascript:document.getElementById('add_project_div').style.display='block'">新增项目</a>
+        即可创建属于您的新项目！
+    </span>
+    </h3>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>项目id</th>
+            <th>项目名称</th>
+            <th>创建者</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <body>
+        {% for i in projects %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.username }}</td>
+                <td>{{ i.remark }}</td>
+                <td>
+                    <button onclick="javascript: document.location.href='/apis/{{ i.id }}/'" class="btn btn-success">详情</button>
+                    <button onclick="delete_project('{{ i.id }}')" class="btn btn-danger">删除</button>
+                </td>
+            </tr>
+        {% endfor %}
+        <div id="add_project_div" style="width: 50%; display: none; background-color: white; border: 1px solid black; position: absolute;
+            left: 25%; top: 30px; padding-left: 10px; box-shadow: 4px 4px 8px grey; border-radius: 5px" ;>
+            <h3>项目名称：(最多100字)</h3>
+            <input id="project_name" type="text" placeholder="请输入项目名称" style="width: 95%">
+            <br><br>
+            <button onclick="javascript: document.getElementById('add_project_div').style.display='none'" class="btn btn-danger">取消</button>
+            <button onclick="add_project()" class="btn btn-success">确定</button>
+            <br><br>
+        </div>
+        </body>
+    </table>
+{% endblock body %}
+{% block sc %}
+    <script>
+        // 新增项目
+        function add_project() {
+            const project_name = document.getElementById('project_name').value;
+            $.get('/add_project/', {
+                'project_name': project_name
+            }, function (ret) {
+                document.location.reload();
+            })
+        }
+
+        // 删除项目
+        function delete_project(id) {
+            var status = confirm('确定要删除该项目吗？')
+            if (status == true) {
+                $.get('/delete_project/', {
+                    'id': id
+                }, function (ret) {
+                    document.location.reload();
+                })
+            }
+        }
+    </script>
+{% endblock sc %}
